@@ -6,7 +6,7 @@ RESET= \033[0m
 
 NAME = philosophers
 
-SRCS = main.c	
+SRCS = main.c functions.c
 
 CC = cc
 
