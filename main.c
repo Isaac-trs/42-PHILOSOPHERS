@@ -17,11 +17,28 @@
 // void	*eating(void *program)
 void	*eating(void *philo)
 {
+	if (((t_philo *)philo)->left_fork->id > ((t_philo *)philo)->right_fork->id)
+	{
+		pthread_mutex_lock(&((t_philo *)philo)->left_fork->mutex);
+		pthread_mutex_lock(&((t_philo *)philo)->right_fork->mutex);
+	}
+	else
+	{
+		pthread_mutex_lock(&((t_philo *)philo)->right_fork->mutex);
+		pthread_mutex_lock(&((t_philo *)philo)->left_fork->mutex);
+	}
+	struct timeval tv;
 	// t_program	*test = (t_program *)program;
 	// printf("%li "CYAN BOLD"%ld"RESET YELLOW" is eating\n"RESET, time(NULL), pthread_self());
-	printf("%li "CYAN BOLD"Philosopher %i"RESET YELLOW" is eating\n"RESET, time(NULL), ((t_philo *)philo)->id);
-	sleep(((t_philo *)philo)->time_to_eat);
-	printf("%li "CYAN BOLD"Philosopher %i"RESET GREEN" finished eating\n"RESET, time(NULL), ((t_philo *)philo)->id);
+	gettimeofday(&tv, NULL);
+	print_timestamp(YELLOW" is eating"RESET, (t_philo *)philo);
+	usleep(((t_philo *)philo)->time_to_eat * 1000);
+	gettimeofday(&((t_philo *)philo)->last_meal, NULL);
+	// printf("| Philo %i last meal at "RED"%li"RESET"|\n", ((t_philo *)philo)->id, ((t_philo *)philo)->last_meal.tv_usec);
+	print_timestamp(GREEN" finished eating"RESET, (t_philo *)philo);
+	
+	pthread_mutex_unlock(&((t_philo *)philo)->left_fork->mutex);
+	pthread_mutex_unlock(&((t_philo *)philo)->right_fork->mutex);
 	return NULL;
 }
 
@@ -35,77 +52,91 @@ void	*thinking(void *philo)
 
 void	*sleeping(void *philo)
 {
-	printf("%li "CYAN BOLD"Philosopher %i"RESET YELLOW" is sleeping\n"RESET, time(NULL), ((t_philo *)philo)->id);
-	sleep(((t_philo *)philo)->time_to_sleep);
-	printf("%li "CYAN BOLD"Philosopher %i"RESET GREEN" finished sleeping\n"RESET, time(NULL), ((t_philo *)philo)->id);
+	print_timestamp(YELLOW" is sleeping"RESET, (t_philo *)philo);
+	// printf("%li "CYAN BOLD"Philosopher %i"RESET YELLOW" is sleeping\n"RESET, time(NULL), ((t_philo *)philo)->id);
+	usleep(((t_philo *)philo)->time_to_sleep * 1000);
+	print_timestamp(GREEN" finished sleeping"RESET, (t_philo *)philo);
 	return NULL;
 }
 
 void	*start_routine(void *philo)
 {
-
-	if ( ((t_philo *)philo)->id % 2 != 0)
-		sleeping((t_philo *)philo);
-	else 
-		eating((t_philo *)philo);
+	gettimeofday(&((t_philo *)philo)->tv, NULL);
+	print_timestamp("started routine", ((t_philo *)philo));
+	// if ( ((t_philo *)philo)->id % 2 != 0)
+	// 	sleeping((t_philo *)philo);
+	// else
+	eating((t_philo *)philo);
 
 	return NULL;
 }
 
 t_philo	*init_philos(t_program *program)
 {
-	t_philo *philos;
+	// t_philo *philos;
 	int	i;
 
 	i = 0;
-	philos = malloc(sizeof(t_philo) * program->nb_philos);
-	if (!philos)
+	program->philos = malloc(sizeof(t_philo) * program->nb_philos);
+	if (!program->philos)
 	{
 		perror(RED"MALLOC PHILOS ERROR"RESET);
 		exit(1);
 	}
 	while (i < program->nb_philos)
 	{
-		philos[i].id = i + 1;
-		philos[i].time_to_sleep = program->time_to_sleep;
-		philos[i].time_to_eat = program->time_to_eat;
-		// philos[i].time_to_die = program->time_to_die;
-		printf("Philo[%i] created | tte [%i] | tts [%i] | ttd [%i]\n", philos[i].id, philos[i].time_to_eat, philos[i].time_to_sleep, philos[i].time_to_die);
+		program->philos[i].id = i + 1;
+		program->philos[i].time_to_sleep = program->time_to_sleep;
+		program->philos[i].time_to_eat = program->time_to_eat;
+		program->philos[i].time_to_die = program->time_to_die;
+		program->philos[i].time_to_die = 66;
+		program->philos[i].right_fork = NULL;
+		program->philos[i].left_fork = NULL;
+
+		// printf("Philo[%i] created | tte [%i] | tts [%i] | ttd [%i]\n", philos[i].id, philos[i].time_to_eat, philos[i].time_to_sleep, philos[i].time_to_die);
+		printf("Philo[%i] created | tte [%i] | tts [%i] | ttd [%i]\n", program->philos[i].id, program->philos[i].time_to_eat, program->philos[i].time_to_sleep, program->philos[i].time_to_die);
 		i++;
 	}
-	return (philos);
+	print_success("ALL PHILOS");
+	return (program->philos);
 }
 
-t_fork *init_forks(unsigned int nb_philos, t_philo *philos)
+// t_fork *init_forks(unsigned int nb_philos, t_philo *philos)
+t_fork *init_forks(t_program *program, t_philo *philos)
 {
-	t_fork	*forks;
-	unsigned int		i;
+	// t_fork	*forks;
+	int		i;
 
-	forks = malloc(sizeof(t_fork) * nb_philos);
-	if (!forks)
+	program->forks = malloc(sizeof(t_fork) * program->nb_philos);
+	if (!program->forks)
 	{
 		perror(RED"MALLOC FORKS ERROR"RESET);
 		exit(1);
 	}
 	i = 0;
-	while (i < nb_philos)
+	while (i < program->nb_philos)
 	{
-		forks[i].id = i + 1;
+		program->forks[i].id = i + 1;
+		pthread_mutex_init(&(program->forks[i].mutex), NULL);
 		i++;
 	}
 	i = 0;
-	while (i < nb_philos)
+	while (i < program->nb_philos)
 	{
 		//forks[i].id = i + 1;
 		//forks[i].left_philo= &philos[i];
-		philos[i].right_fork = &forks[philos[i].id - 1];
-		philos[i].left_fork = &forks[(philos[i].id ) % nb_philos];
-		printf("Philo[%i] | right_fork -> %i | left_fork -> %i\n", philos[i].id, philos[i].right_fork->id, philos[i].left_fork->id);
+		philos[i].right_fork = &program->forks[philos[i].id - 1];
+		philos[i].left_fork = &program->forks[(philos[i].id ) % program->nb_philos];
+		// printf("Philo[%i] | right_fork -> %i (%p) | left_fork -> %i (%p)\n", philos[i].id, philos[i].right_fork->id, philos[i].right_fork ,philos[i].left_fork->id, philos[i].left_fork);
 		//forks[i].right_philo = &philos[(  % nb_philos];
 		//printf("fork[%i] created, left = philo[%i] | right = philo[%i] \n", forks[i].id, forks[i].left_philo->id, forks[i].right_philo->id);
 		i++;
 	}
-	return (forks);
+	
+	print_success("ALL FORKS");
+	print_philosophers(program);
+
+	return (program->forks);
 
 }
 
@@ -125,7 +156,7 @@ t_bool	check_and_init(char **args, t_program *program)
 
 	printf("%i %i %i %i\n", program->nb_philos, program->time_to_die, program->time_to_eat, program->time_to_sleep);
 	program->philos = init_philos(program);
-	program->forks = init_forks(program->nb_philos, program->philos);
+	program->forks = init_forks(program, program->philos);
 	return (1);
 }
 
@@ -141,17 +172,14 @@ int	main(int ac, char **av)
 	// }
 	// printf(av[0]);
 	
-	// struct timeval tv;
+	struct timeval tv;
 	// pthread_t thread;
 	// int	secs_main = 3;
 	// int secs_thread = 6;
 	// pthread_create(&thread, NULL, eating, &secs_thread);
 	// eating(&secs_main);
 
-	// if (gettimeofday(&tv, NULL) == 0 )
-	// 	printf(CYAN"Timestamp " BOLD"%li\n"RESET, tv.tv_sec);
-	// else
-	// 	perror(RED"Time failed\n"RESET);
+	
 	// pthread_join(thread, NULL);
 
 	//pthread_t	*threads = malloc(sizeof(pthread_t)* ft_atoi(av[1]));
@@ -164,10 +192,14 @@ int	main(int ac, char **av)
 	// 	perror(RED"MALLOC ERROR"RESET);
 	// 	exit(1);
 	// }
-	
-	 int i = 0;
-	 while (i < program.nb_philos)
+	if (gettimeofday(&tv, NULL) == 0 )
+		printf(CYAN"Timestamp start " BOLD"%li.%li\n"RESET, tv.tv_sec, tv.tv_usec);
+	else
+		perror(RED"Time failed\n"RESET);
+	int i = 0;
+	while (i < program.nb_philos)
 	{
+		gettimeofday(&(program.philos[i].tv), NULL);
 		if (program.philos[i].id % 2 != 0 )
 			// pthread_create(&(program.philos[i].thread), NULL, eating, &program.time_to_eat);
 			pthread_create(&(program.philos[i].thread), NULL, start_routine, &program.philos[i]);
@@ -179,6 +211,18 @@ int	main(int ac, char **av)
 	while (i > 0)
 		pthread_join(program.philos[--i].thread, NULL);
 	// free(philoss);
+
+	gettimeofday(&tv, NULL);
+	printf("%li.%li\n", tv.tv_sec, tv.tv_usec);
+	usleep(3 * 1000000);
+	gettimeofday(&tv, NULL);
+	printf("%li.%li\n", tv.tv_sec, tv.tv_usec);
+
+	int j = 0;
+	while (j < program.nb_philos)
+		pthread_mutex_destroy(&program.forks[j++].mutex);
+	free(program.forks);
+	free(program.philos);
 
 
 	return (0);

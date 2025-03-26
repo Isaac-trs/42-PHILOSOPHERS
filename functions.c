@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/03/12 18:48:07 by istripol         ###   ########.fr       */
+/*   Updated: 2025/03/26 07:39:17 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,4 +48,15 @@ t_bool is_number(char *str)
 		str++;
 	}
 	return (1);
+}
+
+void	print_timestamp(char *message, t_philo *philo)
+{
+	struct timeval	tv;
+
+	gettimeofday(&tv, NULL);
+	printf("%li "CYAN"Philo %i "RESET, tv.tv_usec / 1000, philo->id);
+	
+	printf(message);
+	printf("\n");
 }

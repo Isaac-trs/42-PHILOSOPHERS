@@ -6,12 +6,12 @@ RESET= \033[0m
 
 NAME = philosophers
 
-SRCS = main.c functions.c
+SRCS = main.c functions.c debug.c
 
 CC = cc
 
 HEADER = philosophers.h
-CFLAGS = -Wall -Werror -Wextra -pthread -g3
+CFLAGS = -Wall -Werror -Wextra -lpthread -g3
 
 all:	$(NAME)
 

@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:39:57 by istripol          #+#    #+#             */
-/*   Updated: 2025/03/25 04:57:16 by istripol         ###   ########.fr       */
+/*   Updated: 2025/03/26 07:14:08 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,8 @@ typedef struct s_philo
 	pthread_t		thread;
 	int				id;
 	long int		started; //(microseconds)
-	long int		last_meal; //(microseconds)
+	struct	timeval	tv;
+	struct	timeval	last_meal; //(microseconds)
 	long int		last_think; //(microseconds)
 	unsigned int	nb_meals;
 	unsigned int	nb_think;
@@ -85,6 +86,17 @@ typedef struct s_program
 	
 } t_program ;
 
-int	ft_atoi(const char *nptr);
+typedef enum e_flag
+{
+	eat, sleeep, think, forking, start
+} t_flag;
+
+// functions.c
+void	print_timestamp(char *message, t_philo *philo);
+int		ft_atoi(const char *nptr);
 t_bool	is_number(char *str);
+
+// debug.c
+void    print_philosophers(t_program *programs);
+void    print_success(char *word);
 #endif
