@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:39:57 by istripol          #+#    #+#             */
-/*   Updated: 2025/03/26 07:14:08 by istripol         ###   ########.fr       */
+/*   Updated: 2025/03/26 09:28:18 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 # define RED "\033[0;91m"
 # define GREEN "\033[0;92m"
 # define YELLOW "\033[0;93m"
+# define ORANGE "\033[38;5;208m"
 # define CYAN "\033[0;96m"
 # define BOLD "\033[1m"
 # define RESET "\033[0m"

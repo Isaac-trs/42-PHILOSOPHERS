@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/03/26 07:39:17 by istripol         ###   ########.fr       */
+/*   Updated: 2025/03/26 09:45:02 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,5 +58,5 @@ void	print_timestamp(char *message, t_philo *philo)
 	printf("%li "CYAN"Philo %i "RESET, tv.tv_usec / 1000, philo->id);
 	
 	printf(message);
-	printf("\n");
+	// printf("\n");
 }

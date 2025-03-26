@@ -20,22 +20,32 @@ void	*eating(void *philo)
 	if (((t_philo *)philo)->left_fork->id > ((t_philo *)philo)->right_fork->id)
 	{
 		pthread_mutex_lock(&((t_philo *)philo)->left_fork->mutex);
+		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
+		printf(GREEN"%i\n"RESET, ((t_philo *)philo)->left_fork->id);
 		pthread_mutex_lock(&((t_philo *)philo)->right_fork->mutex);
+		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
+		printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
 	}
 	else
 	{
 		pthread_mutex_lock(&((t_philo *)philo)->right_fork->mutex);
+		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
+		printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
 		pthread_mutex_lock(&((t_philo *)philo)->left_fork->mutex);
+		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
+		printf("RED%i\n"RESET, ((t_philo *)philo)->left_fork->id);
 	}
 	struct timeval tv;
 	// t_program	*test = (t_program *)program;
 	// printf("%li "CYAN BOLD"%ld"RESET YELLOW" is eating\n"RESET, time(NULL), pthread_self());
 	gettimeofday(&tv, NULL);
-	print_timestamp(YELLOW" is eating"RESET, (t_philo *)philo);
+	print_timestamp(YELLOW" is eating\n"RESET, (t_philo *)philo);
 	usleep(((t_philo *)philo)->time_to_eat * 1000);
 	gettimeofday(&((t_philo *)philo)->last_meal, NULL);
 	// printf("| Philo %i last meal at "RED"%li"RESET"|\n", ((t_philo *)philo)->id, ((t_philo *)philo)->last_meal.tv_usec);
-	print_timestamp(GREEN" finished eating"RESET, (t_philo *)philo);
+	print_timestamp(GREEN" finished eating\n"RESET, (t_philo *)philo);
+	print_timestamp(ORANGE" unlocked forks "RESET, (t_philo *)philo);
+	printf(GREEN"%i & %i\n"RESET, ((t_philo *)philo)->right_fork->id, ((t_philo *)philo)->left_fork->id);
 	
 	pthread_mutex_unlock(&((t_philo *)philo)->left_fork->mutex);
 	pthread_mutex_unlock(&((t_philo *)philo)->right_fork->mutex);
@@ -52,20 +62,20 @@ void	*thinking(void *philo)
 
 void	*sleeping(void *philo)
 {
-	print_timestamp(YELLOW" is sleeping"RESET, (t_philo *)philo);
+	print_timestamp(YELLOW" is sleeping\n"RESET, (t_philo *)philo);
 	// printf("%li "CYAN BOLD"Philosopher %i"RESET YELLOW" is sleeping\n"RESET, time(NULL), ((t_philo *)philo)->id);
 	usleep(((t_philo *)philo)->time_to_sleep * 1000);
-	print_timestamp(GREEN" finished sleeping"RESET, (t_philo *)philo);
+	print_timestamp(GREEN" finished sleeping\n"RESET, (t_philo *)philo);
 	return NULL;
 }
 
 void	*start_routine(void *philo)
 {
 	gettimeofday(&((t_philo *)philo)->tv, NULL);
-	print_timestamp("started routine", ((t_philo *)philo));
-	// if ( ((t_philo *)philo)->id % 2 != 0)
-	// 	sleeping((t_philo *)philo);
-	// else
+	print_timestamp("started routine\n", ((t_philo *)philo));
+	if ( ((t_philo *)philo)->id % 2 != 0)
+		sleeping((t_philo *)philo);
+	else
 	eating((t_philo *)philo);
 
 	return NULL;
