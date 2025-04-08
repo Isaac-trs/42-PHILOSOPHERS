@@ -17,25 +17,26 @@
 // void	*eating(void *program)
 void	*eating(void *philo)
 {
+	struct timeval	tv;
+
 	if (((t_philo *)philo)->left_fork->id > ((t_philo *)philo)->right_fork->id)
 	{
 		pthread_mutex_lock(&((t_philo *)philo)->left_fork->mutex);
-		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
-		printf(GREEN"%i\n"RESET, ((t_philo *)philo)->left_fork->id);
+		print_timestamp(ORANGE" has taken a fork\n"RESET, ((t_philo *)philo));
+		// printf(RED"%i\n"RESET, ((t_philo *)philo)->left_fork->id);
 		pthread_mutex_lock(&((t_philo *)philo)->right_fork->mutex);
-		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
-		printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
+		print_timestamp(ORANGE" has taken a fork\n"RESET, ((t_philo *)philo));
+		// printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
 	}
 	else
 	{
 		pthread_mutex_lock(&((t_philo *)philo)->right_fork->mutex);
-		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
-		printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
+		print_timestamp(ORANGE" has taken a fork \n"RESET, ((t_philo *)philo));
+		// printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
 		pthread_mutex_lock(&((t_philo *)philo)->left_fork->mutex);
-		print_timestamp(ORANGE"locked fork "RESET, ((t_philo *)philo));
-		printf("RED%i\n"RESET, ((t_philo *)philo)->left_fork->id);
+		print_timestamp(ORANGE" has taken a fork \n"RESET, ((t_philo *)philo));
+		// printf(RED"%i\n"RESET, ((t_philo *)philo)->left_fork->id);
 	}
-	struct timeval tv;
 	// t_program	*test = (t_program *)program;
 	// printf("%li "CYAN BOLD"%ld"RESET YELLOW" is eating\n"RESET, time(NULL), pthread_self());
 	gettimeofday(&tv, NULL);
@@ -44,11 +45,12 @@ void	*eating(void *philo)
 	gettimeofday(&((t_philo *)philo)->last_meal, NULL);
 	// printf("| Philo %i last meal at "RED"%li"RESET"|\n", ((t_philo *)philo)->id, ((t_philo *)philo)->last_meal.tv_usec);
 	print_timestamp(GREEN" finished eating\n"RESET, (t_philo *)philo);
-	print_timestamp(ORANGE" unlocked forks "RESET, (t_philo *)philo);
-	printf(GREEN"%i & %i\n"RESET, ((t_philo *)philo)->right_fork->id, ((t_philo *)philo)->left_fork->id);
+	// print_timestamp(ORANGE" unlocked forks "RESET, (t_philo *)philo);
+	// printf(GREEN"%i & %i\n"RESET, ((t_philo *)philo)->right_fork->id, ((t_philo *)philo)->left_fork->id);
 	
 	pthread_mutex_unlock(&((t_philo *)philo)->left_fork->mutex);
 	pthread_mutex_unlock(&((t_philo *)philo)->right_fork->mutex);
+	// printf("Last meal of Philo %i: %li.%li\n", ((t_philo *)philo)->id, ((t_philo *)philo)->last_meal.tv_sec, ((t_philo *)philo)->last_meal.tv_usec);
 	return NULL;
 }
 
@@ -71,14 +73,28 @@ void	*sleeping(void *philo)
 
 void	*start_routine(void *philo)
 {
-	gettimeofday(&((t_philo *)philo)->tv, NULL);
-	print_timestamp("started routine\n", ((t_philo *)philo));
-	if ( ((t_philo *)philo)->id % 2 != 0)
-		sleeping((t_philo *)philo);
-	else
-	eating((t_philo *)philo);
+	gettimeofday(&((t_philo *)philo)->last_meal, NULL);
+	// print_timestamp("started routine\n", ((t_philo *)philo));
 
-	return NULL;
+	while (1)
+	{
+		if ( ((t_philo *)philo)->id % 2 != 0)
+		{
+			sleeping((t_philo *)philo);
+			eating((t_philo *)philo);
+		}
+		else
+		{
+			eating((t_philo *)philo);
+			sleeping((t_philo *)philo);
+		}
+	}
+	// if ( ((t_philo *)philo)->id % 2 != 0)
+	// 	sleeping((t_philo *)philo);
+	// else
+	// 	eating((t_philo *)philo);
+
+	return NULL ;
 }
 
 t_philo	*init_philos(t_program *program)
@@ -102,6 +118,8 @@ t_philo	*init_philos(t_program *program)
 		program->philos[i].time_to_die = 66;
 		program->philos[i].right_fork = NULL;
 		program->philos[i].left_fork = NULL;
+		program->philos[i].last_meal.tv_sec = 0;
+		program->philos[i].last_meal.tv_usec = 0;
 
 		// printf("Philo[%i] created | tte [%i] | tts [%i] | ttd [%i]\n", philos[i].id, philos[i].time_to_eat, philos[i].time_to_sleep, philos[i].time_to_die);
 		printf("Philo[%i] created | tte [%i] | tts [%i] | ttd [%i]\n", program->philos[i].id, program->philos[i].time_to_eat, program->philos[i].time_to_sleep, program->philos[i].time_to_die);
@@ -203,13 +221,13 @@ int	main(int ac, char **av)
 	// 	exit(1);
 	// }
 	if (gettimeofday(&tv, NULL) == 0 )
-		printf(CYAN"Timestamp start " BOLD"%li.%li\n"RESET, tv.tv_sec, tv.tv_usec);
+		printf(CYAN"Timestamp start " BOLD"%li.%li\n"RESET, tv.tv_sec, tv.tv_usec/1000);
 	else
 		perror(RED"Time failed\n"RESET);
 	int i = 0;
 	while (i < program.nb_philos)
 	{
-		gettimeofday(&(program.philos[i].tv), NULL);
+		gettimeofday(&(program.philos[i].started), NULL);
 		if (program.philos[i].id % 2 != 0 )
 			// pthread_create(&(program.philos[i].thread), NULL, eating, &program.time_to_eat);
 			pthread_create(&(program.philos[i].thread), NULL, start_routine, &program.philos[i]);
