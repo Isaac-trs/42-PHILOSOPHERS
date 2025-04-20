@@ -30,7 +30,7 @@ t_philo	*init_philos(t_program *program)
 		// program->philos[i].time_to_die = 66;
 		program->philos[i].right_fork = NULL;
 		program->philos[i].left_fork = NULL;
-		program->philos[i].last_meal = 0;
+		program->philos[i].last_meal = program->started;
 		program->philos[i].write_lock = &(program->write_lock);
 		program->philos[i].dead_lock = &(program->dead_lock);
 		program->philos[i].program = program;
@@ -92,12 +92,13 @@ t_bool	check_and_init(char **args, t_program *program)
 	program->foo_died = 0;
 	program->nb_philos = ft_atoi(args[0]); 
 	// program->time_to_die = ft_atoi(args[1]);
-	program->time_to_die = 66;
+	program->time_to_die = 410;
 	program->time_to_eat = ft_atoi(args[1]);
 	// program->time_to_sleep = ft_atoi(args[3]);
 	program->time_to_sleep = ft_atoi(args[2]);
 
 	printf("%i %i %i %i\n", program->nb_philos, program->time_to_die, program->time_to_eat, program->time_to_sleep);
+	program->started = get_time_ms();
 	program->philos = init_philos(program);
 	program->forks = init_forks(program, program->philos);
 	return (1);
@@ -120,7 +121,7 @@ int	main(int ac, char **av)
 
 	pthread_t monitor;
 	pthread_create(&monitor, NULL,  monitor_thread, & program);
-	pthread_join(monitor, NULL);
+	// pthread_join(monitor, NULL);
 	
 	long long now = get_time_ms();
 	printf(CYAN"Timestamp start " BOLD"%lli\n"RESET, now);
@@ -131,7 +132,7 @@ int	main(int ac, char **av)
 
 
 
-	clean_exit(&program, all, 0);
+	pthread_join(monitor, NULL);
 
 
 

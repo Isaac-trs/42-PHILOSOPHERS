@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/04/15 09:02:44 by istripol         ###   ########.fr       */
+/*   Updated: 2025/04/20 12:12:45 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	clean_exit(t_program *program, t_flag flag, int thread)
 {
 	int	j;
 
-	pthread_mutex_lock(& program->write_lock);
+	// pthread_mutex_lock(& program->write_lock);
 	j = 0;
 	// int i = 0;
 	if (flag == philosophers)
@@ -102,8 +102,8 @@ void	clean_exit(t_program *program, t_flag flag, int thread)
 		free(program->philos);
 		exit(1);
 	}
-	pthread_mutex_unlock(& program->write_lock);
-	pthread_mutex_destroy(& program->write_lock);
+	// pthread_mutex_unlock(& program->write_lock);
+	// pthread_mutex_destroy(& program->write_lock);
 	pthread_mutex_destroy(& program->dead_lock);
 	free(program->forks);
 	free(program->philos);

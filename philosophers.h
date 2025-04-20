@@ -44,7 +44,6 @@ typedef struct s_philo
 
 	struct s_program	*program;
 	int					id;
-	long long		started; //(microseconds)
 	long long		last_meal; //(microseconds)
 	unsigned int	nb_meals;
 	unsigned int	nb_think;
@@ -83,6 +82,7 @@ typedef struct s_program
 	t_philo			*philos;	 // array
 	t_fork			*forks;		//	array
 
+	long long		started; //(microseconds)
 	int				nb_philos;
 	int 			time_to_eat;
 	int 			time_to_sleep;
