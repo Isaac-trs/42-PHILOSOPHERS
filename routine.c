@@ -41,19 +41,19 @@ static void	unlock_forks(void *philo)
 	// if (((t_philo *)philo)->left_fork->id > ((t_philo *)philo)->right_fork->id)
 	if (((t_philo *)philo)->id % 2 == 0)
 	{
-		pthread_mutex_unlock(&((t_philo *)philo)->left_fork->mutex);
+		pthread_mutex_unlock(&((t_philo *)philo)->right_fork->mutex);
 		// print_timestamp(ORANGE" has dropped fork\n"RESET, ((t_philo *)philo));
 		// printf(RED"%i\n"RESET, ((t_philo *)philo)->left_fork->id);
-		pthread_mutex_unlock(&((t_philo *)philo)->right_fork->mutex);
+		pthread_mutex_unlock(&((t_philo *)philo)->left_fork->mutex);
 		// print_timestamp(ORANGE" has dropped a fork\n"RESET, ((t_philo *)philo));
 		// printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
 	}
 	else
 	{
-		pthread_mutex_unlock(&((t_philo *)philo)->right_fork->mutex);
+		pthread_mutex_unlock(&((t_philo *)philo)->left_fork->mutex);
 		// print_timestamp(ORANGE" has dropped a fork \n"RESET, ((t_philo *)philo));
 		// printf(GREEN"%i\n"RESET, ((t_philo *)philo)->right_fork->id);
-		pthread_mutex_unlock(&((t_philo *)philo)->left_fork->mutex);
+		pthread_mutex_unlock(&((t_philo *)philo)->right_fork->mutex);
 		// print_timestamp(ORANGE" has dropped a fork \n"RESET, ((t_philo *)philo));
 		// printf(RED"%i\n"RESET, ((t_philo *)philo)->left_fork->id);
 	}
@@ -73,7 +73,7 @@ void	*eating(void *phil)
 	// printf("%li "CYAN BOLD"%ld"RESET YELLOW" is eating\n"RESET, time(NULL), pthread_self());
 	print_timestamp(YELLOW" is eating\n"RESET, philo);
 	// usleep(((t_philo *)philo)->time_to_eat * 1000);
-	usleep(philo->time_to_eat * 1000);
+	ft_usleep(philo->time_to_eat);
 	
 
 	// printf("| Philo %i last meal at "RED"%li"RESET"|\n", ((t_philo *)philo)->id, ((t_philo *)philo)->last_meal.tv_usec);
@@ -101,7 +101,7 @@ void	*sleeping(void *phil)
 	philo = (t_philo *)phil;
 	print_timestamp(YELLOW" is sleeping\n"RESET, philo);
 	// printf("%li "CYAN BOLD"Philosopher %i"RESET YELLOW" is sleeping\n"RESET, time(NULL), ((t_philo *)philo)->id);
-	usleep(philo->time_to_sleep * 1000);
+	ft_usleep(philo->time_to_sleep);
 	
 	print_timestamp(GREEN" finished sleeping\n"RESET, philo);
 	return NULL;
@@ -123,8 +123,6 @@ void	*start_routine(void *philo)
 {
 	// print_timestamp("started routine\n", ((t_philo *)philo));
 	// int i = 0;
-	if (((t_philo *)philo)->id % 2 != 0)
-		usleep(1000);
 	((t_philo *)philo)->last_meal = get_time_ms();
 	while (1)
 	{
@@ -134,7 +132,7 @@ void	*start_routine(void *philo)
 			if (check_death_lock(((t_philo *)philo)->program) == 1)
 				break;
 			sleeping((t_philo *)philo);
-			usleep(1000);
+			// ft_usleep(1000);
 			// check death
 			print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 			// check death
@@ -152,7 +150,7 @@ void	*start_routine(void *philo)
 			if (check_death_lock(((t_philo *)philo)->program) == 1)
 				break;
 			sleeping((t_philo *)philo);
-			usleep(1000);
+			// ft_usleep(1000);
 		}
 		// if (i++ == 3)
 		// {
@@ -254,7 +252,7 @@ void	*monitor_thread(void *arg)
 
 				return (NULL);
 			}
-		usleep (500);
+		// ft_usleep(500);
 	}
 	// clean_exit(program, all, 1);
 	return (NULL);

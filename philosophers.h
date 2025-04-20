@@ -110,6 +110,7 @@ int		ft_atoi(const char *nptr);
 t_bool	is_number(char *str);
 void	clean_exit(t_program *program, t_flag flag, int thread);
 long long	get_time_ms();
+void	ft_usleep(long ms);
 
 // debug.c
 void	print_philosophers(t_program *programs);
@@ -121,4 +122,6 @@ void	*start_routine(void *philo);
 
 // routine.c
 void	*monitor_thread(void *arg);
+
+
 #endif

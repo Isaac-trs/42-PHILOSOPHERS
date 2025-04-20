@@ -92,7 +92,7 @@ t_bool	check_and_init(char **args, t_program *program)
 	program->foo_died = 0;
 	program->nb_philos = ft_atoi(args[0]); 
 	// program->time_to_die = ft_atoi(args[1]);
-	program->time_to_die = 410;
+	program->time_to_die = 400;
 	program->time_to_eat = ft_atoi(args[1]);
 	// program->time_to_sleep = ft_atoi(args[3]);
 	program->time_to_sleep = ft_atoi(args[2]);

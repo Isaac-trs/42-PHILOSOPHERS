@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/04/20 12:12:45 by istripol         ###   ########.fr       */
+/*   Updated: 2025/04/20 12:33:24 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	print_timestamp(char *message, t_philo *philo)
 	// printf("%zu "CYAN"Philo %i "RESET, test - cur, philo->id);
 
 	printf(BOLD"%lli"RESET CYAN" %i"RESET, now, philo->id);
-	printf(message);
+	printf("%s", message);
 	pthread_mutex_unlock(philo->write_lock);
 
 	// printf("\n");
@@ -73,6 +73,15 @@ long long get_time_ms()
 	struct timeval	tv;
 	gettimeofday(&tv, NULL);
 	return ((long long)(tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
+}
+
+void	ft_usleep(long ms)
+{
+	long	now;
+
+	now = get_time_ms();
+	while (get_time_ms() - now < ms)
+		usleep(10);
 }
 
 void	clean_exit(t_program *program, t_flag flag, int thread)
