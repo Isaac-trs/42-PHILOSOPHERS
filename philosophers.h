@@ -67,6 +67,7 @@ typedef struct s_fork
 {
 	pthread_mutex_t	mutex;
 	unsigned int	id;
+	t_bool			in_use;
 	//t_philo			*left_philo;
 	//t_philo			*right_philo;
 

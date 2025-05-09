@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/04/20 12:33:24 by istripol         ###   ########.fr       */
+/*   Updated: 2025/04/23 20:38:22 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,11 @@ void	print_timestamp(char *message, t_philo *philo)
 
 	long long now;
 	pthread_mutex_lock(philo->write_lock);
+    if (philo->program->foo_died)
+	{
+        pthread_mutex_unlock(philo->write_lock);
+        return;
+	}
 	now = get_time_ms();
 	// unsigned long int cur = (philo->started.tv_usec / 1000) + (philo->started.tv_sec * 1000);
 	// unsigned long int test = (tv.tv_sec * 1000) + (tv.tv_usec / 1000) ;
@@ -87,35 +92,33 @@ void	ft_usleep(long ms)
 void	clean_exit(t_program *program, t_flag flag, int thread)
 {
 	int	j;
+	thread = 0;
+	thread ++;
 
-	// pthread_mutex_lock(& program->write_lock);
-	j = 0;
+	pthread_mutex_lock(& program->write_lock);
+	j = -1;
 	// int i = 0;
 	if (flag == philosophers)
 		exit(1);
-	if (flag != forking)	
-		while (j < program->nb_philos )
-		{
-			pthread_mutex_lock(& program->forks[j].mutex);
-			pthread_mutex_unlock(& program->forks[j].mutex);
-			pthread_mutex_destroy(& program->forks[j].mutex);
-			pthread_mutex_destroy(& program->philos[j++].meal_mutex);
-		}
-	if (flag == threadd)
-		while (j <= thread)
-			pthread_detach(program->philos[j++].thread);
-	if (flag == null || flag == threadd || flag == forking)
-	{
-		if (flag != forking)
-			free(program->forks);
-		free(program->philos);
-		exit(1);
+	while (++j < program->nb_philos)
+	{ 
+		// pthread_mutex_lock(& program->forks[j].mutex);
+		// pthread_mutex_unlock(& program->forks[j].mutex);
+		pthread_mutex_destroy(& program->forks[j].mutex);
+		pthread_mutex_destroy(& program->philos[j].meal_mutex);
 	}
-	// pthread_mutex_unlock(& program->write_lock);
-	// pthread_mutex_destroy(& program->write_lock);
-	pthread_mutex_destroy(& program->dead_lock);
 	free(program->forks);
+
+	// free(program->forks);
+	// free(program->philos);
+	
 	free(program->philos);
+	pthread_mutex_destroy(& program->dead_lock);
+	pthread_mutex_unlock(& program->write_lock);
+	pthread_mutex_destroy(& program->write_lock);
+	// free(program->forks);
+	// free(program->philos);
+	// free(program->forks);
 	exit(0);
 }
 

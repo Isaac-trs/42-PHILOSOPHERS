@@ -5,6 +5,18 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/28 09:39:10 by istripol          #+#    #+#             */
+/*   Updated: 2025/04/28 09:39:11 by istripol         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:09:55 by istripol          #+#    #+#             */
 /*   Updated: 2025/03/16 23:04:17by istripol         ###   ########.fr       */
 /*                                                                            */
@@ -92,7 +104,7 @@ t_bool	check_and_init(char **args, t_program *program)
 	program->foo_died = 0;
 	program->nb_philos = ft_atoi(args[0]); 
 	// program->time_to_die = ft_atoi(args[1]);
-	program->time_to_die = 400;
+	program->time_to_die = 410;
 	program->time_to_eat = ft_atoi(args[1]);
 	// program->time_to_sleep = ft_atoi(args[3]);
 	program->time_to_sleep = ft_atoi(args[2]);
@@ -130,9 +142,13 @@ int	main(int ac, char **av)
 
 	// free(philoss);
 
-
+	for (int i = 0; i < program.nb_philos; i++)
+		pthread_join(program.philos[i].thread, NULL);
 
 	pthread_join(monitor, NULL);
+	while (program.foo_died == 0)
+		;
+	clean_exit(&program, all, 0);
 
 
 
