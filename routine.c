@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:29:36 by istripol          #+#    #+#             */
-/*   Updated: 2025/04/25 06:18:07 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/09 08:58:15y istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,9 +111,9 @@ t_bool	check_death_lock(t_program *program)
 {
 	t_bool	died;
 
-	pthread_mutex_lock(&program->dead_lock);
+	// pthread_mutex_lock(&program->dead_lock);
 	died = program->foo_died;
-	pthread_mutex_unlock(&program->dead_lock);
+	// pthread_mutex_unlock(&program->dead_lock);
 	return (died);
 }
 
@@ -121,16 +121,59 @@ void	*start_routine(void *philo)
 {
 	// print_timestamp("started routine\n", ((t_philo *)philo));
 	// int i = 0;
+	if ( ((t_philo *)philo)->id % 2 != 0)
+		ft_usleep(1);
 	((t_philo *)philo)->last_meal = get_time_ms();
+
+	// while (((t_philo *)philo)->program->foo_died == 0)
+	// {
+		
+	// 	if ( ((t_philo *)philo)->id % 2 != 0)
+	// 	{
+	// 		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+	// 		if (check_death_lock(((t_philo *)philo)->program) == 1)
+	// 			break;
+	// 		sleeping((t_philo *)philo);
+	// 		ft_usleep(1);
+	// 		// check death
+	// 		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+	// 		// check death
+	// 		if (check_death_lock(((t_philo *)philo)->program) == 1)
+	// 			break;
+	// 		eating((t_philo *)philo);
+	// 	}
+	// 	else
+	// 	{
+	// 		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+	// 		if (check_death_lock(((t_philo *)philo)->program) == 1)
+	// 			break;
+	// 		eating((t_philo *)philo);
+	// 		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+	// 		if (check_death_lock(((t_philo *)philo)->program) == 1)
+	// 			break;
+	// 		sleeping((t_philo *)philo);
+	// 		ft_usleep(1);
+	// 	}
+	// 	// if (i++ == 3)
+	// 	// {
+	// 		// pthread_mutex_lock(((t_philo *)philo)->dead_lock);
+	// 		// ((t_philo *)philo)->program->foo_died = 1;
+	// 		// pthread_mutex_unlock(((t_philo *)philo)->dead_lock);
+	// 	// }
+	// 	// usleep(1);
+	// }
+	// ----------------------------------------------------------------
 	while (((t_philo *)philo)->program->foo_died == 0)
 	{
+		
 		if ( ((t_philo *)philo)->id % 2 != 0)
 		{
-			print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 			if (check_death_lock(((t_philo *)philo)->program) == 1)
 				break;
 			sleeping((t_philo *)philo);
-			ft_usleep(1);
+			if (check_death_lock(((t_philo *)philo)->program) == 1)
+				break;
+			// ft_usleep(1);
 			// check death
 			print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 			// check death
@@ -144,20 +187,18 @@ void	*start_routine(void *philo)
 			if (check_death_lock(((t_philo *)philo)->program) == 1)
 				break;
 			eating((t_philo *)philo);
+			if (check_death_lock(((t_philo *)philo)->program) == 1)
+				break;
 			print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 			if (check_death_lock(((t_philo *)philo)->program) == 1)
 				break;
 			sleeping((t_philo *)philo);
-			ft_usleep(1);
+			if (check_death_lock(((t_philo *)philo)->program) == 1)
+				break;
+			// ft_usleep(1);
 		}
-		// if (i++ == 3)
-		// {
-			// pthread_mutex_lock(((t_philo *)philo)->dead_lock);
-			// ((t_philo *)philo)->program->foo_died = 1;
-			// pthread_mutex_unlock(((t_philo *)philo)->dead_lock);
-		// }
-		// usleep(1);
 	}
+	// ----------------------------------------------------------------
 	//clean_exit(((t_philo *)philo)->program, all, 0);
 // 
 	// int j = 0;
