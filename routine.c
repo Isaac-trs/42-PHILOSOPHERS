@@ -111,9 +111,9 @@ t_bool	check_death_lock(t_program *program)
 {
 	t_bool	died;
 
-	// pthread_mutex_lock(&program->dead_lock);
+	pthread_mutex_lock(&program->dead_lock);
 	died = program->foo_died;
-	// pthread_mutex_unlock(&program->dead_lock);
+	pthread_mutex_unlock(&program->dead_lock);
 	return (died);
 }
 
@@ -123,7 +123,9 @@ void	*start_routine(void *philo)
 	// int i = 0;
 	if ( ((t_philo *)philo)->id % 2 != 0)
 		ft_usleep(1);
+	pthread_mutex_lock(&((t_philo *)philo)->meal_mutex);
 	((t_philo *)philo)->last_meal = get_time_ms();
+	pthread_mutex_unlock(&((t_philo *)philo)->meal_mutex);
 
 	// while (((t_philo *)philo)->program->foo_died == 0)
 	// {
@@ -163,8 +165,10 @@ void	*start_routine(void *philo)
 	// 	// usleep(1);
 	// }
 	// ----------------------------------------------------------------
-	while (((t_philo *)philo)->program->foo_died == 0)
+	// while (((t_philo *)philo)->program->foo_died == 0)
+	while (1)
 	{
+		// if (((t_philo *)philo)->program->foo_died == 0)
 		
 		if ( ((t_philo *)philo)->id % 2 != 0)
 		{
@@ -183,9 +187,6 @@ void	*start_routine(void *philo)
 		}
 		else
 		{
-			print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
-			if (check_death_lock(((t_philo *)philo)->program) == 1)
-				break;
 			eating((t_philo *)philo);
 			if (check_death_lock(((t_philo *)philo)->program) == 1)
 				break;
@@ -239,8 +240,9 @@ void	*start_routine(void *philo)
 
 static t_bool	check_philo_died(t_philo	*philo)
 {
-	long elapsed_meal;
-	
+	long	elapsed_meal;
+	// long	last_meal;	
+
 	pthread_mutex_lock(& philo->meal_mutex);
 	elapsed_meal = get_time_ms() - philo->last_meal;
 	pthread_mutex_unlock(& philo->meal_mutex);
@@ -258,7 +260,7 @@ static t_bool	check_philo_died(t_philo	*philo)
 		// -------------------------------------------------------
 		pthread_mutex_lock(philo->write_lock);
 		printf(BOLD"%lli "RESET, get_time_ms());
-		printf("Philo %i "RED"DIED\n"RESET, philo->id);
+		printf(CYAN"%i" RED" DIED\n"RESET, philo->id);
 		printf("elapsed meal from philo %i %li\n", philo->id, elapsed_meal);
 
 		pthread_mutex_unlock(philo->write_lock);
@@ -269,6 +271,7 @@ static t_bool	check_philo_died(t_philo	*philo)
 
 void	*monitor_thread(void *arg)
 {
+// This function doesnt need to return anything
 	t_program	*program;
 	int	i;
 
@@ -278,16 +281,17 @@ void	*monitor_thread(void *arg)
 	// printf(BOLD"MONITOR STARTED\n"RESET);
 	// pthread_mutex_unlock(& program->write_lock);
 
-	while (program->foo_died == 0)
+	// while (program->foo_died == 0)
+	while (1)
 	{
 		i = -1;
 		while (++i < program->nb_philos)
 		{		
 			if(check_philo_died(& program->philos[i]))
 			{
-				pthread_mutex_lock(& program->dead_lock);
-				program->foo_died = 1;
-				pthread_mutex_unlock(& program->dead_lock);
+				// pthread_mutex_lock(& program->dead_lock);
+				// program->foo_died = 1;
+				// pthread_mutex_unlock(& program->dead_lock);
 				
 				// pthread_mutex_lock(& program->write_lock);
 				// printf(BOLD"MONITOR STOPPED\n"RESET);

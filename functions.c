@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/04/23 20:38:22 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/20 04:49:59 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,8 +55,18 @@ void	print_timestamp(char *message, t_philo *philo)
 	// struct timeval	tv;
 
 	long long now;
+	t_bool	foo_died;
+
+	// pthread_mutex_lock(philo->dead_lock);
+	// foo_died = philo->program->foo_died;
+	// pthread_mutex_unlock(philo->dead_lock);
+
 	pthread_mutex_lock(philo->write_lock);
-    if (philo->program->foo_died)
+	pthread_mutex_lock(philo->dead_lock);
+	foo_died = philo->program->foo_died;
+	pthread_mutex_unlock(philo->dead_lock);
+
+    if (foo_died == 1)
 	{
         pthread_mutex_unlock(philo->write_lock);
         return;

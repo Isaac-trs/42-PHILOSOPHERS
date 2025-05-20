@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 09:39:10 by istripol          #+#    #+#             */
-/*   Updated: 2025/04/28 09:39:11 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/20 04:33:16 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -146,8 +146,16 @@ int	main(int ac, char **av)
 		pthread_join(program.philos[i].thread, NULL);
 
 	pthread_join(monitor, NULL);
-	while (program.foo_died == 0)
-		;
+
+	t_bool test;
+	while (1)
+	{
+		pthread_mutex_lock(&program.dead_lock);
+		test = program.foo_died;
+		pthread_mutex_unlock(&program.dead_lock);
+		if (test == 1)
+			break;
+	}
 	clean_exit(&program, all, 0);
 
 
