@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/24 12:09:55 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/24 12:37:39 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,6 @@ void	ft_exit(t_program *program, int flag)
 		exit(0);
 	if (flag == ERREXIT)
 	{
-		printf(RED"STANDARD EXIT !\n"RESET);
 		j = -1;
 		while (++j < program->nb_philos)
 			pthread_mutex_destroy(& program->forks[j].mutex);
@@ -84,7 +83,6 @@ void	ft_exit(t_program *program, int flag)
 	}
 	if (flag == ERRFORKS || flag == ERREXIT)
 	{
-		printf(RED"MALLOC FORKS ERROR OR EXIT !\n"RESET);
 		j = -1;
 		while (++j < program->nb_philos)
 			pthread_mutex_destroy(&program->philos[j].meal_mutex);
