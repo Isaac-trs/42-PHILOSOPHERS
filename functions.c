@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/12 16:44:03 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/20 04:49:59 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/24 12:09:55 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,44 +50,12 @@ t_bool	is_number(char *str)
 	return (1);
 }
 
-void	print_timestamp(char *message, t_philo *philo)
-{
-	// struct timeval	tv;
-
-	long long now;
-	t_bool	foo_died;
-
-	// pthread_mutex_lock(philo->dead_lock);
-	// foo_died = philo->program->foo_died;
-	// pthread_mutex_unlock(philo->dead_lock);
-
-	pthread_mutex_lock(philo->write_lock);
-	pthread_mutex_lock(philo->dead_lock);
-	foo_died = philo->program->foo_died;
-	pthread_mutex_unlock(philo->dead_lock);
-
-    if (foo_died == 1)
-	{
-        pthread_mutex_unlock(philo->write_lock);
-        return;
-	}
-	now = get_time_ms();
-	// unsigned long int cur = (philo->started.tv_usec / 1000) + (philo->started.tv_sec * 1000);
-	// unsigned long int test = (tv.tv_sec * 1000) + (tv.tv_usec / 1000) ;
-	// printf("%zu "CYAN"Philo %i "RESET, test - cur, philo->id);
-
-	printf(BOLD"%lli"RESET CYAN" %i"RESET, now, philo->id);
-	printf("%s", message);
-	pthread_mutex_unlock(philo->write_lock);
-
-	// printf("\n");
-}
-
-long long get_time_ms()
+long long	get_time_ms(void)
 {
 	struct timeval	tv;
+
 	gettimeofday(&tv, NULL);
-	return ((long long)(tv.tv_sec) * 1000 + (tv.tv_usec) / 1000);
+	return (((long long)(tv.tv_sec) *1000) + (tv.tv_usec) / 1000);
 }
 
 void	ft_usleep(long ms)
@@ -99,36 +67,31 @@ void	ft_usleep(long ms)
 		usleep(10);
 }
 
-void	clean_exit(t_program *program, t_flag flag, int thread)
+void	ft_exit(t_program *program, int flag)
 {
 	int	j;
-	thread = 0;
-	thread ++;
 
 	pthread_mutex_lock(& program->write_lock);
-	j = -1;
-	// int i = 0;
-	if (flag == philosophers)
-		exit(1);
-	while (++j < program->nb_philos)
-	{ 
-		// pthread_mutex_lock(& program->forks[j].mutex);
-		// pthread_mutex_unlock(& program->forks[j].mutex);
-		pthread_mutex_destroy(& program->forks[j].mutex);
-		pthread_mutex_destroy(& program->philos[j].meal_mutex);
+	if (flag == ERRARGS || flag == ERRPHILO)
+		exit(0);
+	if (flag == ERREXIT)
+	{
+		printf(RED"STANDARD EXIT !\n"RESET);
+		j = -1;
+		while (++j < program->nb_philos)
+			pthread_mutex_destroy(& program->forks[j].mutex);
+		free(program->forks);
 	}
-	free(program->forks);
-
-	// free(program->forks);
-	// free(program->philos);
-	
-	free(program->philos);
+	if (flag == ERRFORKS || flag == ERREXIT)
+	{
+		printf(RED"MALLOC FORKS ERROR OR EXIT !\n"RESET);
+		j = -1;
+		while (++j < program->nb_philos)
+			pthread_mutex_destroy(&program->philos[j].meal_mutex);
+		free(program->philos);
+	}
 	pthread_mutex_destroy(& program->dead_lock);
 	pthread_mutex_unlock(& program->write_lock);
 	pthread_mutex_destroy(& program->write_lock);
-	// free(program->forks);
-	// free(program->philos);
-	// free(program->forks);
 	exit(0);
 }
-

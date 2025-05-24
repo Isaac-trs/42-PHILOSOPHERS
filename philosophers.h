@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:39:57 by istripol          #+#    #+#             */
-/*   Updated: 2025/04/16 07:39:55by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/24 12:21:16 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,12 @@
 # define RESET "\033[0m"
 
 // STATES
-# define EATING 1
-# define SLEEPING 2
-# define THINKING 3
+# define ERRPHILO 1
+# define ERRFORKS 2
+# define ERREXIT  3
+# define ERRARGS  4
 
 typedef unsigned int	t_bool;
-
 
 typedef struct s_philo
 {
@@ -44,20 +44,20 @@ typedef struct s_philo
 
 	struct s_program	*program;
 	int					id;
-	long long		last_meal; //(microseconds)
-	unsigned int	nb_meals;
-	unsigned int	nb_think;
+	long long			last_meal; //(microseconds)
+	unsigned int		nb_meals;
+	unsigned int		nb_think;
 
-	struct s_fork	*left_fork;
-	struct s_fork	*right_fork;
+	struct s_fork		*left_fork;
+	struct s_fork		*right_fork;
 
-	int 				time_to_eat;
+	int					time_to_eat;
 	int					time_to_sleep;
 	int					time_to_die;
 
-	t_bool			thinking;
-	t_bool			eating;
-	t_bool			dead;
+	t_bool				thinking;
+	t_bool				eating;
+	t_bool				dead;
 
 	// First philo's right fork is last's left fork
 	// Last philo's left fork is first's right fork
@@ -70,25 +70,22 @@ typedef struct s_fork
 	t_bool			in_use;
 	//t_philo			*left_philo;
 	//t_philo			*right_philo;
-
 }	t_fork;
 
 typedef struct s_program
 {
 	pthread_mutex_t	write_lock;	// printf - thread-safe
-	
 	pthread_mutex_t	dead_lock;	// if a philo dies lock
 	t_bool			foo_died;	// if a philo dies var
-
-	t_philo			*philos;	 // array
+	t_philo			*philos;// array
 	t_fork			*forks;		//	array
-
+	pthread_t		monitor;
 	long long		started; //(microseconds)
 	int				nb_philos;
-	int 			time_to_eat;
-	int 			time_to_sleep;
-	int 			time_to_die;
-
+	int				time_to_eat;
+	int				time_to_sleep;
+	int				time_to_die;
+	int				nb_meals;
 }	t_program;
 
 typedef enum e_flag
@@ -106,23 +103,28 @@ typedef enum e_flag
 }	t_flag;
 
 // functions.c
-void	print_timestamp(char *message, t_philo *philo);
-int		ft_atoi(const char *nptr);
-t_bool	is_number(char *str);
-void	clean_exit(t_program *program, t_flag flag, int thread);
-long long	get_time_ms();
-void	ft_usleep(long ms);
-
+void		print_timestamp(char *message, t_philo *philo);
+int			ft_atoi(const char *nptr);
+t_bool		is_number(char *str);
+void		clean_exit(t_program *program, t_flag flag, int thread);
+long long	get_time_ms(void);
+void		ft_usleep(long ms);
+void		ft_exit(t_program *program, int flag);
 // debug.c
-void	print_philosophers(t_program *programs);
-void	print_success(char *word);
+void		print_philosophers(t_program *programs);
+void		print_success(char *word);
 
 // philos.c
-void	start_philos(t_program *program);
-void	*start_routine(void *philo);
+void		start_philos(t_program *program);
+t_philo		*init_philos(t_program *program);
+t_bool		check_and_init(char **args, t_program *program);
+t_fork		*init_forks(t_program *program, t_philo *philos);
 
 // routine.c
-void	*monitor_thread(void *arg);
+void		*start_routine(void *philo);
 
+// monitor.c
+t_bool		check_death_lock(t_program *program);
+void		*monitor_thread(void *arg);
 
 #endif
