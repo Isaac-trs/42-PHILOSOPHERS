@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:39:57 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/24 12:21:16 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/26 06:10:51 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ typedef struct s_philo
 	int					id;
 	long long			last_meal; //(microseconds)
 	unsigned int		nb_meals;
-	unsigned int		nb_think;
+	unsigned int		max_meals;
 
 	struct s_fork		*left_fork;
 	struct s_fork		*right_fork;

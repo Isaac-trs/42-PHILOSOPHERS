@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:22:33 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/24 12:24:15 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/28 19:22:27 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,12 +46,11 @@ t_philo	*init_philos(t_program *program)
 		program->philos[i].write_lock = &(program->write_lock);
 		program->philos[i].dead_lock = &(program->dead_lock);
 		program->philos[i].program = program;
-		program->philos[i].nb_meals = program->nb_meals;
+		program->philos[i].nb_meals = 0;
+		program->philos[i].max_meals = program->nb_meals;
 		pthread_mutex_init(&(program->philos[i].meal_mutex), NULL);
-		printf("Philo[%i] created | tte [%i] | tts [%i] | ttd [%i] | nbm [%i]\n", program->philos[i].id, program->philos[i].time_to_eat, program->philos[i].time_to_sleep, program->philos[i].time_to_die, program->philos[i].nb_meals);
 		i++;
 	}
-	print_success("ALL PHILOS");
 	return (program->philos);
 }
 
@@ -74,12 +73,11 @@ t_fork	*init_forks(t_program *program, t_philo *philos)
 	while (i < program->nb_philos)
 	{
 		philos[i].right_fork = & program->forks[philos[i].id - 1];
-		philos[i].left_fork = &\
-		program->forks[(philos[i].id) % program->nb_philos];
+		if (program->nb_philos > 1)
+			philos[i].left_fork = &\
+			program->forks[(philos[i].id) % program->nb_philos];
 		i++;
 	}
-	print_success("ALL FORKS");
-	print_philosophers(program);
 	return (program->forks);
 }
 

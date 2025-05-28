@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:29:36 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/24 12:23:01 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/28 19:26:24 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,16 +49,26 @@ static void	*eating(void *phil)
 	t_philo	*philo;
 
 	philo = (t_philo *)phil;
-	pthread_mutex_lock(& philo->meal_mutex);
-	philo->last_meal = get_time_ms();
-	philo->nb_meals++;
-	pthread_mutex_unlock(& philo->meal_mutex);
-	lock_forks(philo);
-	print_timestamp(YELLOW" is eating\n"RESET, philo);
-	ft_usleep(philo->time_to_eat);
-	unlock_forks(philo);
-	print_timestamp(GREEN" finished eating\n"RESET, philo);
-	print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+	if (philo->program->nb_philos == 1)
+	{
+		print_timestamp(ORANGE" has taken a fork\n"RESET, philo);
+		ft_usleep(philo->program->time_to_die);
+	}
+	else
+	{
+		pthread_mutex_lock(& philo->meal_mutex);
+		philo->last_meal = get_time_ms();
+		pthread_mutex_unlock(& philo->meal_mutex);
+		lock_forks(philo);
+		print_timestamp(YELLOW" is eating\n"RESET, philo);
+		ft_usleep(philo->time_to_eat);
+		unlock_forks(philo);
+		print_timestamp(GREEN" finished eating\n"RESET, philo);
+		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+		pthread_mutex_lock(& philo->meal_mutex);
+		philo->nb_meals++;
+		pthread_mutex_unlock(& philo->meal_mutex);
+	}
 	return (NULL);
 }
 
