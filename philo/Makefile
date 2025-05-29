@@ -11,8 +11,7 @@ SRCS = main.c functions.c debug.c philos.c routine.c monitor.c
 CC = cc
 
 HEADER = philosophers.h
-CFLAGS = -Wall -Werror -Wextra -lpthread -g3 -fsanitize=thread	
-
+CFLAGS = -Wall -Werror -Wextra -lpthread
 all:	$(NAME)
 
 $(NAME): $(OBJS)
