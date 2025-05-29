@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 09:39:10 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/29 18:39:41 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/30 00:02:33 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,10 @@ void	print_timestamp(char *message, t_philo *philo)
 int	main(int ac, char **av)
 {
 	t_program		program;
-	int long long	now;
 	int				i;
 
 	if (!(ac == 5 || ac == 6) || check_and_init(&av[1], &program) != 1)
 		exit(0);
-	now = get_time_ms();
-	printf(CYAN"Timestamp start " BOLD"%lli\n"RESET, now);
 	pthread_create(&program.monitor, NULL, monitor_thread, & program);
 	start_philos(&program);
 	i = 0;

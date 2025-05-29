@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/26 04:20:58 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/24 11:33:26 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/29 23:17:34 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@ unsigned int	ft_strlen(char *str)
 	return (i);
 }
 
-void	print_philosophers(t_program *program )//, t_philo *philos)
+void	print_philosophers(t_program *program )
 {
 	int	i;
 
+	print_success("ALL PHILOS");
 	i = 0;
 	printf(YELLOW"program->nb_philos : %i\n"RESET, program->nb_philos);
 	while (i < program->nb_philos)
@@ -41,10 +42,13 @@ void	print_philosophers(t_program *program )//, t_philo *philos)
 	}
 }
 
-// void	print_forks(t_fork *forks, t_program program)
-// {
-// 	;
-// }
+void	print_program(t_program *program)
+{
+	print_success("PROGRAM");
+	printf("philos-> %i | ttd -> %u | tte-> %i | tts-> %i | meals-> %i\n", \
+		program->nb_philos, program->time_to_die, program->time_to_eat, \
+		program->time_to_sleep, program->nb_meals);
+}
 
 void	print_success(char *word)
 {
