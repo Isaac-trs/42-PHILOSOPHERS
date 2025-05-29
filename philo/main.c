@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/28 09:39:10 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/29 04:37:45 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/29 18:39:41 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,8 @@ void	print_timestamp(char *message, t_philo *philo)
 		pthread_mutex_unlock(philo->write_lock);
 		return ;
 	}
-	printf(BOLD"%lli"RESET CYAN" %i"RESET"%s", get_time_ms(), philo->id, message);
+	printf(BOLD"%lli"RESET CYAN" %i"RESET"%s", \
+		get_time_ms() - philo->program->started, philo->id, message);
 	pthread_mutex_unlock(philo->write_lock);
 }
 

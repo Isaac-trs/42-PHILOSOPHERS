@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:29:36 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/29 06:29:41 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:13:39 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,15 +61,16 @@ static void	*eating(void *phil)
 		lock_forks(philo);
 		pthread_mutex_lock(& philo->meal_mutex);
 		philo->last_meal = get_time_ms();
+		// philo->nb_meals++;
 		pthread_mutex_unlock(& philo->meal_mutex);
-		// lock_forks(philo);
 		print_timestamp(YELLOW" is eating\n"RESET, philo);
+		// printf(" (%i)\n", philo->nb_meals);
 		ft_usleep(philo->time_to_eat);
 		unlock_forks(philo);
 		if (check_death_lock(philo->program) == 1)
 			return (NULL);
-		print_timestamp(GREEN" finished eating\n"RESET, philo);
-		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+		// print_timestamp(GREEN" finished eating\n"RESET, philo);
+		// print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 		pthread_mutex_lock(& philo->meal_mutex);
 		philo->nb_meals++;
 		pthread_mutex_unlock(& philo->meal_mutex);
@@ -88,38 +89,32 @@ static void	*sleeping(void *phil)
 	ft_usleep(philo->time_to_sleep);
 	if (check_death_lock(philo->program) == 1)
 		return (NULL);
-	print_timestamp(GREEN" finished sleeping\n"RESET, philo);
-	print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
+	// print_timestamp(GREEN" finished sleeping\n"RESET, philo);
 	return (NULL);
 }
 
 void	*start_routine(void *philo)
 {
-	// if (((t_philo *)philo)->id % 2 != 0)
-		// ft_usleep(0);
+	if (((t_philo *)philo)->id % 2 != 0)
+		ft_usleep(1);
 	pthread_mutex_lock(&((t_philo *)philo)->meal_mutex);
 	((t_philo *)philo)->last_meal = get_time_ms();
 	pthread_mutex_unlock(&((t_philo *)philo)->meal_mutex);
 	while (1)
 	{
+		// if (((t_philo *)philo)->id % 2 != 0)
+			// ft_usleep(1);
 		if (((t_philo *)philo)->id % 2 != 0)
-		{
-			if (check_death_lock(((t_philo *)philo)->program) == 1)
-				break ;
-			sleeping((t_philo *)philo);
-			if (check_death_lock(((t_philo *)philo)->program) == 1)
-				break ;
-			eating((t_philo *)philo);
-		}
-		else
-		{
-			eating((t_philo *)philo);
-			if (check_death_lock(((t_philo *)philo)->program) == 1)
-				break ;
-			sleeping((t_philo *)philo);
-			if (check_death_lock(((t_philo *)philo)->program) == 1)
-				break ;
-		}
+			ft_usleep(1);
+		if (check_death_lock(((t_philo *)philo)->program) == 1)
+			break ;
+		eating((t_philo *)philo);
+		if (check_death_lock(((t_philo *)philo)->program) == 1)
+			break ;
+		sleeping((t_philo *)philo);
+		if (check_death_lock(((t_philo *)philo)->program) == 1)
+			break ;
+		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 	}
 	return ((int *)1);
 }

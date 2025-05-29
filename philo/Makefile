@@ -4,7 +4,7 @@ RED = \033[0;91m
 CYAN = \033[0;96m
 RESET= \033[0m
 
-NAME = philosophers
+NAME = philo
 
 SRCS = main.c functions.c debug.c philos.c routine.c monitor.c
 

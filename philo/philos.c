@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:22:33 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/29 05:52:55 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/29 19:02:52 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@ void	start_philos(t_program *program)
 	int	i;
 
 	i = 0;
+	program->started = get_time_ms();
 	while (i < program->nb_philos)
 	{
 		if (pthread_create(& (program->philos[i].thread), NULL, \
@@ -96,11 +97,10 @@ t_bool	check_and_init(char **args, t_program *program)
 	program->time_to_die = ft_atoi(args[1]);
 	program->time_to_eat = ft_atoi(args[2]);
 	program->time_to_sleep = ft_atoi(args[3]);
-	program->nb_meals = -1;
+	program->nb_meals = 0;
 	if (i == 5)
 		program->nb_meals = ft_atoi(args[4]);
-	if (program->nb_meals == 0 \
-		|| (i == 5 && program->nb_meals <= 0)
+	if ((i == 5 && program->nb_meals <= 0)
 		|| program->nb_philos > 200)
 		return (0);
 	pthread_mutex_init(&(program->write_lock), NULL);
