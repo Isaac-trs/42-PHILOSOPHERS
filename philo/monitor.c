@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/24 01:12:00 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/28 19:26:41 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/29 06:00:16 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,18 @@ t_bool	check_death_lock(t_program *program)
 	return (died);
 }
 
+t_bool	set_death_lock(t_program *program)
+{
+	pthread_mutex_lock(& program->dead_lock);
+	program->foo_died = 1;
+	pthread_mutex_unlock(& program->dead_lock);
+	return (0);
+}
+
 static t_bool	check_philo_died(t_philo	*philo)
 {
 	long	elapsed_meal;
+
 
 	pthread_mutex_lock(& philo->meal_mutex);
 	elapsed_meal = get_time_ms() - philo->last_meal;
@@ -34,9 +43,10 @@ static t_bool	check_philo_died(t_philo	*philo)
 		// pthread_mutex_lock(philo->dead_lock);
 		// philo->program->foo_died = 1;
 		// pthread_mutex_unlock(philo->dead_lock);
+		set_death_lock(philo->program);
 		pthread_mutex_lock(philo->write_lock);
-		printf(BOLD"%lli "RESET, get_time_ms());
-		printf(CYAN"%i" RED" DIED\n"RESET, philo->id);
+		// printf(BOLD"%lli "RESET, get_time_ms());
+		printf(BOLD"%lli "RESET CYAN"%i" RED" DIED\n"RESET, get_time_ms(), philo->id);
 		printf("elapsed meal from philo %i %li\n", philo->id, elapsed_meal);
 		pthread_mutex_unlock(philo->write_lock);
 		return (1);
@@ -46,10 +56,10 @@ static t_bool	check_philo_died(t_philo	*philo)
 
 void	*monitor_thread(void *arg)
 {
-	t_program	*program;
-	int			i;
-	int			total_meals;
-	int			target_meals;
+	t_program		*program;
+	int				i;
+	unsigned int	total_meals;
+	unsigned int	target_meals;
 
 	program = (t_program *)arg;
 	target_meals = program->nb_meals * program->nb_philos;
@@ -64,9 +74,7 @@ void	*monitor_thread(void *arg)
 			pthread_mutex_unlock(&program->philos[i].meal_mutex);
 			if (total_meals == target_meals || check_philo_died(& program->philos[i]))
 			{
-				pthread_mutex_lock(& program->dead_lock);
-				program->foo_died = 1;
-				pthread_mutex_unlock(& program->dead_lock);
+				set_death_lock(program);
 				return (NULL);
 			}
 		}

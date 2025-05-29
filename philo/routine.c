@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/09 14:29:36 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/28 19:26:24 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/29 06:29:41 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,15 +54,20 @@ static void	*eating(void *phil)
 		print_timestamp(ORANGE" has taken a fork\n"RESET, philo);
 		ft_usleep(philo->program->time_to_die);
 	}
+	if (check_death_lock(philo->program) == 1)
+		return (NULL);
 	else
 	{
+		lock_forks(philo);
 		pthread_mutex_lock(& philo->meal_mutex);
 		philo->last_meal = get_time_ms();
 		pthread_mutex_unlock(& philo->meal_mutex);
-		lock_forks(philo);
+		// lock_forks(philo);
 		print_timestamp(YELLOW" is eating\n"RESET, philo);
 		ft_usleep(philo->time_to_eat);
 		unlock_forks(philo);
+		if (check_death_lock(philo->program) == 1)
+			return (NULL);
 		print_timestamp(GREEN" finished eating\n"RESET, philo);
 		print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 		pthread_mutex_lock(& philo->meal_mutex);
@@ -77,8 +82,12 @@ static void	*sleeping(void *phil)
 	t_philo	*philo;
 
 	philo = (t_philo *)phil;
+	if (check_death_lock(philo->program) == 1)
+		return (NULL);
 	print_timestamp(YELLOW" is sleeping\n"RESET, philo);
 	ft_usleep(philo->time_to_sleep);
+	if (check_death_lock(philo->program) == 1)
+		return (NULL);
 	print_timestamp(GREEN" finished sleeping\n"RESET, philo);
 	print_timestamp(YELLOW" is thinking\n"RESET, ((t_philo *)philo));
 	return (NULL);
@@ -86,8 +95,8 @@ static void	*sleeping(void *phil)
 
 void	*start_routine(void *philo)
 {
-	if (((t_philo *)philo)->id % 2 != 0)
-		ft_usleep(1);
+	// if (((t_philo *)philo)->id % 2 != 0)
+		// ft_usleep(0);
 	pthread_mutex_lock(&((t_philo *)philo)->meal_mutex);
 	((t_philo *)philo)->last_meal = get_time_ms();
 	pthread_mutex_unlock(&((t_philo *)philo)->meal_mutex);

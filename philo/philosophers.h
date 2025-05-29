@@ -6,7 +6,7 @@
 /*   By: istripol <istripol@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/03/11 14:39:57 by istripol          #+#    #+#             */
-/*   Updated: 2025/05/26 06:10:51 by istripol         ###   ########.fr       */
+/*   Updated: 2025/05/29 03:57:08 by istripol         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ typedef unsigned int	t_bool;
 
 typedef struct s_philo
 {
+	t_bool				*simulation_start;
 	pthread_t			thread;
 	pthread_mutex_t		*write_lock;
 	pthread_mutex_t		*dead_lock;
@@ -74,6 +75,7 @@ typedef struct s_fork
 
 typedef struct s_program
 {
+	t_bool			simulation_start;
 	pthread_mutex_t	write_lock;	// printf - thread-safe
 	pthread_mutex_t	dead_lock;	// if a philo dies lock
 	t_bool			foo_died;	// if a philo dies var
